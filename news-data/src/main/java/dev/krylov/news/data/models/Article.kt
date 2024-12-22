@@ -4,7 +4,7 @@ import java.util.Date
 
 
 data class Article (
-    val id: Long,
+    val cacheId: Long = ID_NONE,
     val source: Source,
     val author: String,
     val title: String,
@@ -12,8 +12,15 @@ data class Article (
     val url: String,
     val urlToImage: String,
     val publishedAt: Date,
-    val content: String
-)
+    val content: String,
+){
+
+    companion object {
+
+
+        const val ID_NONE = 0L
+    }
+}
 
 data class Source (
     val id: String,

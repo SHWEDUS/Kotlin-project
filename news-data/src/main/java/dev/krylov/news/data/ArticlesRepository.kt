@@ -8,6 +8,7 @@ import dev.krylov.newsapi.modals.ArticleDT
 import dev.krylov.newsapi.modals.ResponseDT
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flatMapLatest
@@ -62,19 +63,16 @@ class ArticlesRepository @Inject constructor(
     }
 
     private fun getAllFromDB(): Flow<RequestResult<List<Article>>> {
-        val dbRequest = database.articleDao::getAll.asFlow().map { RequestResult.Success(it) }
+        val dbRequest = database.articleDao::getAll.asFlow()
+            .map { RequestResult.Success(it) }
+            .catch { RequestResult.Error<List<ArticleDB>>(error = it) }
+
         val start = flowOf<RequestResult<List<ArticleDB>>>(RequestResult.InProgress())
+
         return merge(start, dbRequest).map { result: RequestResult<List<ArticleDB>> ->
                 result.map { articlesDBs ->
                     articlesDBs.map { it.toArticle() }
                 }
             }
     }
-
-
-    suspend fun search(query: String): Flow<Article> {
-        api.everything()
-        TODO("NOT implrmretner")
-    }
-
 }

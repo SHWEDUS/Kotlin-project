@@ -23,6 +23,6 @@ rootProject.name = "NewsForGrandma"
 include(":app")
 include(":newsapi")
 include(":database")
-include(":mylibrary")
-include(":features:news-main")
 include(":news-data")
+
+include(":features:news-main")

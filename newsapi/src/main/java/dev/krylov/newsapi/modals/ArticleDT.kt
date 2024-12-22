@@ -1,5 +1,6 @@
 package dev.krylov.newsapi.modals
 
+import dev.krylov.newsapi.utils.DateSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.util.Date
@@ -13,6 +14,6 @@ data class ArticleDT (
     @SerialName("description") val description: String,
     @SerialName("url") val url: String,
     @SerialName("urlToImage") val urlToImage: String,
-    @SerialName("publishedAt") val publishedAt: Date,
+    @[SerialName("publishedAt") Serializable(with = DateSerializer::class)] val publishedAt: Date,
     @SerialName("content") val content: String
 )
