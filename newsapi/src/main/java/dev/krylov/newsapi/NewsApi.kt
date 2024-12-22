@@ -8,7 +8,7 @@ import androidx.annotation.IntRange
 import com.skydoves.retrofit.adapters.result.ResultCallAdapterFactory
 import dev.krylov.newsapi.modals.ArticleDT
 import dev.krylov.newsapi.modals.LanguageDT
-import dev.krylov.newsapi.modals.Response
+import dev.krylov.newsapi.modals.ResponseDT
 import dev.krylov.newsapi.utils.NewsApiKeyInterceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -24,7 +24,7 @@ interface NewsApi {
         @Query("sortBy") sortBy: SortBy? = null,
         @Query("pageSize") @IntRange(from = 0, to = 100) pageSize: Int = 100,
         @Query("page") @IntRange(from = 1) page: Int = 1,
-    ): Result<Response<ArticleDT>>
+    ): Result<ResponseDT<ArticleDT>>
 }
 
 fun NewsApi(
