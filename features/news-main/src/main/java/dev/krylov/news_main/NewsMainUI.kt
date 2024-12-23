@@ -3,20 +3,16 @@ package dev.krylov.news_main
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.material3.Icon
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -50,6 +46,9 @@ internal fun NewsMainScreen(viewModel: NewsMainViewModel) {
         NewsMainContent(currentState)
     }
 }
+
+
+
 @Composable
 private fun NewsMainContent(currentState: State) {
     Column {
@@ -64,6 +63,7 @@ private fun NewsMainContent(currentState: State) {
         }
     }
 }
+
 @Composable
 private fun ErrorMessage(state: State.Error) {
     Box(
@@ -76,6 +76,7 @@ private fun ErrorMessage(state: State.Error) {
         Text(text = "Error during update", color = NewsTheme.colorScheme.onError)
     }
 }
+
 @Composable
 private fun ProgressIndicator(state: State.Loading) {
     Box(
@@ -87,6 +88,7 @@ private fun ProgressIndicator(state: State.Loading) {
         CircularProgressIndicator()
     }
 }
+
 @Preview
 @Composable
 private fun Articles(
@@ -100,12 +102,13 @@ private fun Articles(
         }
     }
 }
+
 @Preview
 @Composable
 internal fun Article(
-    @PreviewParameter(ArticlePreviewProvider::class, limit = 1) article: ArticleUI,
+    @PreviewParameter(ArticlePreviewProvider::class, limit = 1) article: ArticleUI, modifier: Modifier = Modifier
 ) {
-    Row(Modifier.padding(bottom = 4.dp)) {
+    Row(modifier.padding(bottom = 4.dp)) {
         article.imageUrl?.let { imageUrl ->
             var isImageVisible by remember { mutableStateOf(true) }
             if (isImageVisible) {
@@ -124,15 +127,19 @@ internal fun Article(
         }
         Spacer(modifier = Modifier.size(4.dp))
         Column(modifier = Modifier.padding(8.dp)) {
-            Text(
-                text = article.title,
-                style = NewsTheme.typography.headlineMedium,
-                maxLines = 1
-            )
-            Spacer(modifier = Modifier.size(4.dp))
-            article.description?.let {
+            val title = article.title
+            if (title != null) {
                 Text(
-                    text = it,
+                    text = title,
+                    style = NewsTheme.typography.headlineMedium,
+                    maxLines = 1
+                )
+            }
+            Spacer(modifier = Modifier.size(4.dp))
+            val description = article.description
+            if (description != null) {
+                Text(
+                    text = description,
                     style = NewsTheme.typography.bodyMedium,
                     maxLines = 3
                 )
@@ -141,6 +148,7 @@ internal fun Article(
     }
 }
 
+@Suppress("Debug")
 private class ArticlePreviewProvider : PreviewParameterProvider<ArticleUI> {
     override val values = sequenceOf(
         ArticleUI(
@@ -166,6 +174,7 @@ private class ArticlePreviewProvider : PreviewParameterProvider<ArticleUI> {
         ),
     )
 }
+
 private class ArticlesPreviewProvider : PreviewParameterProvider<List<ArticleUI>> {
     private val articleProvider = ArticlePreviewProvider()
     override val values = sequenceOf(

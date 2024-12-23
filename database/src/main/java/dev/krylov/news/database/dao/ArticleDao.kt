@@ -4,7 +4,6 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
-import androidx.room.RawQuery
 import dev.krylov.news.database.models.ArticleDB
 import kotlinx.coroutines.flow.Flow
 

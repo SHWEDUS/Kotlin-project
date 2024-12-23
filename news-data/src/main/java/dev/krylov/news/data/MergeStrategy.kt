@@ -28,7 +28,7 @@ internal class RequestResponseMergeStrategy<T : Any> : MergeStrategy<RequestResu
     private fun merge(cache: InProgress<T>, serverRequest: InProgress<T>): RequestResult<T> {
         return when {
             serverRequest.data != null -> InProgress(serverRequest.data)
-            else ->  InProgress(cache.data)
+            else -> InProgress(cache.data)
         }
     }
 
@@ -54,9 +54,11 @@ internal class RequestResponseMergeStrategy<T : Any> : MergeStrategy<RequestResu
     private fun merge(cache: InProgress<T>, serverRequest: Error<T>): RequestResult<T> {
         return Error(data = serverRequest.data ?: cache.data, error = serverRequest.error)
     }
+
     private fun merge(cache: Error<T>, serverRequest: InProgress<T>): RequestResult<T> {
         return serverRequest
     }
+
     private fun merge(cache: Error<T>, serverRequest: Success<T>): RequestResult<T> {
         return serverRequest
     }

@@ -60,7 +60,7 @@ dependencies {
 
     implementation(project(":news-data"))
     implementation(project(":news-uikit"))
-
+    implementation(libs.androidx.navigation.compose)
     implementation(libs.dagger.hilt.android)
     kapt(libs.dagger.hilt.compiler)
 }

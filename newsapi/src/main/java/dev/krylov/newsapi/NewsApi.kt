@@ -1,9 +1,6 @@
 package dev.krylov.newsapi
 
 import SortBy
-import retrofit2.http.GET
-import retrofit2.http.Query
-import java.util.Date
 import androidx.annotation.IntRange
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.skydoves.retrofit.adapters.result.ResultCallAdapterFactory
@@ -16,6 +13,9 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.create
+import retrofit2.http.GET
+import retrofit2.http.Query
+import java.util.Date
 
 interface NewsApi {
     @GET("everything")
@@ -40,7 +40,7 @@ fun NewsApi(
     return retrofit.create()
 }
 
-private fun retrofit (
+private fun retrofit(
     baseUrl: String,
     apiKey: String,
     httpClient: OkHttpClient?,
@@ -48,7 +48,7 @@ private fun retrofit (
 ): Retrofit {
     val jsonConverterFactory = json.asConverterFactory("application/json".toMediaType())
 
-    val modifiedHttpClient = (httpClient?.newBuilder()?: OkHttpClient.Builder())
+    val modifiedHttpClient = (httpClient?.newBuilder() ?: OkHttpClient.Builder())
         .addInterceptor(NewsApiKeyInterceptor(apiKey)).build()
 
     return Retrofit.Builder()

@@ -10,4 +10,5 @@ data class ResponseDT<E>(
 
     @SerialName("totalResults") val totalResults: Int,
 
-    @SerialName("articles") val articles:List<E>)
+    @SerialName("articles") val articles: List<E>
+)

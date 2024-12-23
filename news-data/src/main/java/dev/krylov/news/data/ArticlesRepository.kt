@@ -1,5 +1,6 @@
 package dev.krylov.news.data
 
+import dev.krylov.news.corp.Logger
 import dev.krylov.news.data.models.Article
 import dev.krylov.news.database.NewsDatabase
 import dev.krylov.news.database.models.ArticleDB
@@ -10,7 +11,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
@@ -18,23 +18,24 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
-import dev.krylov.news.corp.Logger
-import kotlinx.coroutines.flow.onErrorReturn
 
 class ArticlesRepository @Inject constructor(
     private val database: NewsDatabase,
     private val api: NewsApi,
     private val logger: Logger,
 ) {
-    fun getAll(query: String, mergeStrategy: MergeStrategy<RequestResult<List<Article>>> = RequestResponseMergeStrategy()): Flow<RequestResult<List<Article>>> {
+    fun getAll(
+        query: String,
+        mergeStrategy: MergeStrategy<RequestResult<List<Article>>> = RequestResponseMergeStrategy()
+    ): Flow<RequestResult<List<Article>>> {
         val cashArticles: Flow<RequestResult<List<Article>>> = getAllFromDB()
         val remoteArticles: Flow<RequestResult<List<Article>>> = getAllFromServer(query)
 
         return cashArticles.combine(remoteArticles, mergeStrategy::merge)
             .flatMapLatest { result ->
                 if (result is RequestResult.Success) {
-                    database.articleDao.observeAll().map { dbs -> dbs.map{ it.toArticle()} }
-                        .map {RequestResult.Success(it)}
+                    database.articleDao.observeAll().map { dbs -> dbs.map { it.toArticle() } }
+                        .map { RequestResult.Success(it) }
                 } else {
                     flowOf(result)
                 }
@@ -61,15 +62,15 @@ class ArticlesRepository @Inject constructor(
         val start = flowOf<RequestResult<ResponseDT<ArticleDT>>>(RequestResult.InProgress())
 
         return merge(apiRequest, start)
-            .map {result: RequestResult<ResponseDT<ArticleDT>> ->
+            .map { result: RequestResult<ResponseDT<ArticleDT>> ->
                 result.map { response ->
-                    response.articles.map {it.toArticle()}
+                    response.articles.map { it.toArticle() }
                 }
             }
     }
 
     private suspend fun saveNetResponseToCache(data: List<ArticleDT>) {
-        val dbs= data.map { articleDT -> articleDT.toArticleDB() }
+        val dbs = data.map { articleDT -> articleDT.toArticleDB() }
         database.articleDao.insert(dbs)
     }
 
