@@ -9,7 +9,7 @@ interface MergeStrategy<E> {
     fun merge(cache: E, serverRequest: E): E
 }
 
-internal class RequestResponseMergeStrategy<T: Any>: MergeStrategy<RequestResult<T>> {
+internal class RequestResponseMergeStrategy<T : Any> : MergeStrategy<RequestResult<T>> {
     override fun merge(cache: RequestResult<T>, serverRequest: RequestResult<T>): RequestResult<T> {
         return when {
             cache is InProgress && serverRequest is InProgress -> merge(cache, serverRequest)
@@ -17,8 +17,11 @@ internal class RequestResponseMergeStrategy<T: Any>: MergeStrategy<RequestResult
             cache is InProgress && serverRequest is Success -> merge(cache, serverRequest)
             cache is Success && serverRequest is Error -> merge(cache, serverRequest)
             cache is Success && serverRequest is Success -> merge(cache, serverRequest)
+            cache is InProgress && serverRequest is Error -> merge(cache, serverRequest)
+            cache is Error && serverRequest is InProgress -> merge(cache, serverRequest)
+            cache is Error && serverRequest is Success -> merge(cache, serverRequest)
 
-            else -> error("Unimplemented branch")
+            else -> error("Unimplemented branch right=$cache & left=$serverRequest")
         }
     }
 
@@ -46,5 +49,15 @@ internal class RequestResponseMergeStrategy<T: Any>: MergeStrategy<RequestResult
     @Suppress("UNUSED_PARAMETER")
     private fun merge(cache: Success<T>, serverRequest: Success<T>): RequestResult<T> {
         return Success(data = serverRequest.data)
+    }
+
+    private fun merge(cache: InProgress<T>, serverRequest: Error<T>): RequestResult<T> {
+        return Error(data = serverRequest.data ?: cache.data, error = serverRequest.error)
+    }
+    private fun merge(cache: Error<T>, serverRequest: InProgress<T>): RequestResult<T> {
+        return serverRequest
+    }
+    private fun merge(cache: Error<T>, serverRequest: Success<T>): RequestResult<T> {
+        return serverRequest
     }
 }

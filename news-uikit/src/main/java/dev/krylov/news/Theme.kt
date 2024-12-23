@@ -1,4 +1,4 @@
-package dev.krylov.newsforgrandma.ui.theme
+package dev.krylov.news
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -9,6 +9,10 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.Shapes
+import androidx.compose.material3.Typography
+import androidx.compose.runtime.ReadOnlyComposable
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
@@ -33,7 +37,7 @@ private val LightColorScheme = lightColorScheme(
 )
 
 @Composable
-fun NewsForGrandmaTheme(
+fun NewsTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
@@ -54,4 +58,22 @@ fun NewsForGrandmaTheme(
         typography = Typography,
         content = content
     )
+}
+
+object NewsTheme {
+
+    val colorScheme: ColorScheme
+        @Composable
+        @ReadOnlyComposable
+        get() = MaterialTheme.colorScheme
+
+    val typography: Typography
+        @Composable
+        @ReadOnlyComposable
+        get() = MaterialTheme.typography
+
+    val shapes: Shapes
+        @Composable
+        @ReadOnlyComposable
+        get() = MaterialTheme.shapes
 }

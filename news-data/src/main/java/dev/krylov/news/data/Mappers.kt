@@ -26,11 +26,11 @@ internal fun SourceDB.toSource(): Source {
 }
 
 internal fun SourceDT.toSource(): Source {
-    return Source(id = id, name = name)
+    return Source(id = id ?: name, name = name)
 }
 
 internal fun SourceDT.toSourceDB(): SourceDB {
-    return SourceDB(id = id, name = name)
+    return SourceDB(id = id ?: name, name = name)
 }
 
 internal fun ArticleDT.toArticle() : Article {

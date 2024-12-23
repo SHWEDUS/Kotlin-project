@@ -26,3 +26,5 @@ include(":database")
 include(":news-data")
 
 include(":features:news-main")
+include(":news-corp")
+include(":news-uikit")

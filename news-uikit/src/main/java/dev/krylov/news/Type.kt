@@ -1,4 +1,4 @@
-package dev.krylov.newsforgrandma.ui.theme
+package dev.krylov.news
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

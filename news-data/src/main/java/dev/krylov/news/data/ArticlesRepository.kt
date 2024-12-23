@@ -18,14 +18,17 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
+import dev.krylov.news.corp.Logger
+import kotlinx.coroutines.flow.onErrorReturn
 
 class ArticlesRepository @Inject constructor(
     private val database: NewsDatabase,
     private val api: NewsApi,
+    private val logger: Logger,
 ) {
-    fun getAll(mergeStrategy: MergeStrategy<RequestResult<List<Article>>> = RequestResponseMergeStrategy()): Flow<RequestResult<List<Article>>> {
+    fun getAll(query: String, mergeStrategy: MergeStrategy<RequestResult<List<Article>>> = RequestResponseMergeStrategy()): Flow<RequestResult<List<Article>>> {
         val cashArticles: Flow<RequestResult<List<Article>>> = getAllFromDB()
-        val remoteArticles: Flow<RequestResult<List<Article>>> = getAllFromServer()
+        val remoteArticles: Flow<RequestResult<List<Article>>> = getAllFromServer(query)
 
         return cashArticles.combine(remoteArticles, mergeStrategy::merge)
             .flatMapLatest { result ->
@@ -38,11 +41,19 @@ class ArticlesRepository @Inject constructor(
             }
     }
 
-    private fun getAllFromServer(): Flow<RequestResult<List<Article>>> {
-        val apiRequest = flow { emit(api.everything())}
+    private fun getAllFromServer(query: String): Flow<RequestResult<List<Article>>> {
+        val apiRequest = flow { emit(api.everything(query = query)) }
             .onEach { result ->
                 if (result.isSuccess) {
                     saveNetResponseToCache(result.getOrThrow().articles)
+                }
+            }
+            .onEach { result ->
+                if (result.isFailure) {
+                    logger.e(
+                        LOG_TAG,
+                        "Error getting data from server. Cause = ${result.exceptionOrNull()}"
+                    )
                 }
             }
             .map { it.toRequestResult() }
@@ -64,15 +75,22 @@ class ArticlesRepository @Inject constructor(
 
     private fun getAllFromDB(): Flow<RequestResult<List<Article>>> {
         val dbRequest = database.articleDao::getAll.asFlow()
-            .map { RequestResult.Success(it) }
-            .catch { RequestResult.Error<List<ArticleDB>>(error = it) }
+            .map<List<ArticleDB>, RequestResult<List<ArticleDB>>> { RequestResult.Success(it) }
+            .catch {
+                logger.e(LOG_TAG, "Error getting from database. Cause = $it")
+                emit(RequestResult.Error(error = it))
+            }
 
         val start = flowOf<RequestResult<List<ArticleDB>>>(RequestResult.InProgress())
 
         return merge(start, dbRequest).map { result: RequestResult<List<ArticleDB>> ->
-                result.map { articlesDBs ->
-                    articlesDBs.map { it.toArticle() }
-                }
+            result.map { articlesDBs ->
+                articlesDBs.map { it.toArticle() }
             }
+        }
+    }
+
+    private companion object {
+        const val LOG_TAG = "ArticlesRepository"
     }
 }

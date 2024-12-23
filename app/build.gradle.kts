@@ -1,9 +1,9 @@
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.androidApplication)
+    alias(libs.plugins.jetbrainsKotlinAndroid)
     alias(libs.plugins.dagger.hilt.android)
     alias(libs.plugins.kapt)
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
@@ -19,8 +19,8 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "NEWS_API_KEY", "\"\"")
-        buildConfigField("String", "NEWS_API_BASE_URL", "\"\"")
+        buildConfigField("String", "NEWS_API_KEY", "\"9160d564378b44efb11f35c15bfcde3b\"")
+        buildConfigField("String", "NEWS_API_BASE_URL", "\"https://newsapi.org/v2/\"")
     }
 
     buildTypes {
@@ -59,22 +59,16 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.compose.runtime)
-    implementation(libs.androidx.material3)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
-    debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
+
     implementation(libs.dagger.hilt.android)
     kapt(libs.dagger.hilt.compiler)
 
     implementation(project(":news-data"))
     implementation(project(":newsapi"))
+    implementation(project(":features:news-main"))
     implementation(project(":database"))
+    implementation(project(":news-corp"))
+    implementation(project(":news-uikit"))
+
+    debugImplementation(libs.okhttp.logging.interceptor)
 }
